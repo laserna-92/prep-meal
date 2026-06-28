@@ -11,15 +11,7 @@ import { useTheme } from '@/theme';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import { saveProfileAndTarget } from '@/api/profile';
 import { generatePlan } from '@/api/plan';
-
-/** ISO date (yyyy-mm-dd) of the upcoming Monday, used as the plan's week_start. */
-function nextMonday(): string {
-  const d = new Date();
-  const day = d.getDay(); // 0=Sun..6=Sat
-  const delta = (8 - (day === 0 ? 7 : day)) % 7 || 7;
-  d.setDate(d.getDate() + delta);
-  return d.toISOString().slice(0, 10);
-}
+import { nextMonday } from '@/lib/dates';
 
 export default function SummaryStep() {
   const router = useRouter();

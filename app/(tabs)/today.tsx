@@ -9,15 +9,10 @@ import { useTheme } from '@/theme';
 import { mockTarget, mockTodayMeals } from '@/lib/mock';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import { getCurrentPlan } from '@/api/plan';
+import { weekdayIndex } from '@/lib/dates';
 import type { Macros, PlannedMeal } from '@/types/models';
 
 const EMPTY: Macros = { calories: 0, proteinG: 0, carbsG: 0, fatG: 0 };
-
-/** Our plans index days 0=Mon..6=Sun; map JS getDay() (0=Sun) to that. */
-function todayIndex(): number {
-  const js = new Date().getDay();
-  return (js + 6) % 7;
-}
 
 export default function Today() {
   const theme = useTheme();
@@ -34,7 +29,7 @@ export default function Today() {
         if (!active) return;
         if (plan) {
           setTarget(plan.targetSnapshot);
-          const today = plan.days.find((d) => d.dayOfWeek === todayIndex()) ?? plan.days[0];
+          const today = plan.days.find((d) => d.dayOfWeek === weekdayIndex()) ?? plan.days[0];
           setMeals(today?.meals ?? []);
         }
       } finally {

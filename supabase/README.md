@@ -35,6 +35,9 @@ Edge Functions earn their place later.
 | Function | Purpose |
 |---|---|
 | `generate_meal_plan(p_week_start date, p_variety text)` | Build the week's plan for the caller; returns the plan id. |
+| `meal_alternatives(p_meal uuid, p_limit int)` | Swap candidates for a meal: same slot, closest calories. |
+| `swap_meal(p_meal uuid, p_recipe uuid)` | Replace a meal's recipe, rescaling servings to its calorie share. |
+| `confirm_plan(p_plan uuid, p_people smallint)` | Mark a plan confirmed and build its shopping list; returns list id. |
 | `generate_shopping_list(p_plan uuid, p_people smallint)` | Aggregate + dedupe ingredients into a shopping list; returns list id. |
 | `recalc_recipe(p_recipe uuid)` | Recompute a recipe's per-serving macros from its ingredients. |
 

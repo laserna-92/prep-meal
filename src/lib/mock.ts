@@ -2,7 +2,7 @@
  * Mock data for the scaffold — lets screens render before the API exists.
  * Replace with Supabase / Edge Function calls (see docs/05-api-contract.md).
  */
-import type { MealPlan, Macros, PlannedMeal } from '@/types/models';
+import type { MealPlan, Macros, PlannedMeal, RecipeSummary } from '@/types/models';
 
 export const mockTarget: Macros = { calories: 2650, proteinG: 185, carbsG: 320, fatG: 70 };
 
@@ -46,6 +46,34 @@ export const mockTodayMeals: PlannedMeal[] = [
     recipe: { id: 'r_4', title: 'Salmão + legumes assados', perServing: { calories: 540, proteinG: 48 }, prepMinutes: 20, isPrepFriendly: true },
   },
 ];
+
+export const mockAlternatives: RecipeSummary[] = [
+  { id: 'r_5', title: 'Peru + batata-doce assada', perServing: { calories: 523, proteinG: 55 }, prepMinutes: 10, isPrepFriendly: true },
+  { id: 'r_6', title: 'Bowl de peru + arroz', perServing: { calories: 575, proteinG: 54 }, prepMinutes: 10, isPrepFriendly: true },
+  { id: 'r_7', title: 'Atum + massa', perServing: { calories: 501, proteinG: 42 }, prepMinutes: 5, isPrepFriendly: true },
+];
+
+export const mockShoppingList = {
+  id: 'sl_mock',
+  people: 1,
+  estTotal: 58.2,
+  aisles: [
+    { aisle: 'produce' as const, items: [
+      { id: 'si_1', name: 'Brócolos', quantity: 600, unit: 'g', aisle: 'produce' as const, estPrice: 1.8, haveAtHome: false, checked: false },
+      { id: 'si_2', name: 'Cenoura', quantity: 500, unit: 'g', aisle: 'produce' as const, estPrice: 0.9, haveAtHome: false, checked: false },
+    ] },
+    { aisle: 'butcher' as const, items: [
+      { id: 'si_3', name: 'Peito de frango', quantity: 1400, unit: 'g', aisle: 'butcher' as const, estPrice: 12.6, haveAtHome: false, checked: false },
+    ] },
+    { aisle: 'dairy' as const, items: [
+      { id: 'si_4', name: 'Ovos', quantity: 18, unit: 'un', aisle: 'dairy' as const, estPrice: 4.5, haveAtHome: true, checked: false },
+    ] },
+    { aisle: 'grocery' as const, items: [
+      { id: 'si_5', name: 'Arroz', quantity: 1000, unit: 'g', aisle: 'grocery' as const, estPrice: 2.0, haveAtHome: false, checked: false },
+      { id: 'si_6', name: 'Aveia', quantity: 500, unit: 'g', aisle: 'grocery' as const, estPrice: 1.5, haveAtHome: false, checked: false },
+    ] },
+  ],
+};
 
 export const mockPlan: MealPlan = {
   id: 'plan_1',

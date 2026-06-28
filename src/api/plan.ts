@@ -4,7 +4,7 @@
  */
 import { supabase } from '@/lib/supabase';
 import { ensureSession } from './auth';
-import type { MealPlan, PlanDay, PlannedMeal, Macros, MealSlot, MealStatus } from '@/types/models';
+import type { MealPlan, PlanDay, PlannedMeal, Macros, MealSlot, MealStatus, RecipeSummary } from '@/types/models';
 
 /** Generate (or replace) the plan for a given week. Returns the plan id. */
 export async function generatePlan(weekStart: string, variety: 'simple' | 'balanced' | 'high' = 'balanced') {
@@ -13,6 +13,33 @@ export async function generatePlan(weekStart: string, variety: 'simple' | 'balan
     p_week_start: weekStart,
     p_variety: variety,
   });
+  if (error) throw error;
+  return data as string;
+}
+
+/** Swap alternatives for a planned meal (same slot, closest calories). */
+export async function getAlternatives(mealId: string, limit = 3): Promise<RecipeSummary[]> {
+  const { data, error } = await supabase.rpc('meal_alternatives', { p_meal: mealId, p_limit: limit });
+  if (error) throw error;
+  return ((data ?? []) as any[]).map((r) => ({
+    id: r.id,
+    title: r.title,
+    imageUrl: r.image_url ?? undefined,
+    perServing: { calories: r.kcal_per_serv, proteinG: r.protein_per_serv },
+    prepMinutes: r.prep_minutes,
+    isPrepFriendly: r.is_prep_friendly,
+  }));
+}
+
+/** Replace a meal's recipe (servings auto-rescaled server-side). */
+export async function swapMeal(mealId: string, recipeId: string) {
+  const { error } = await supabase.rpc('swap_meal', { p_meal: mealId, p_recipe: recipeId });
+  if (error) throw error;
+}
+
+/** Confirm a plan and build its shopping list. Returns the shopping list id. */
+export async function confirmPlan(planId: string, people = 1) {
+  const { data, error } = await supabase.rpc('confirm_plan', { p_plan: planId, p_people: people });
   if (error) throw error;
   return data as string;
 }

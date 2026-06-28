@@ -21,6 +21,7 @@ export default function RootLayout() {
               <Stack.Screen name="index" />
               <Stack.Screen name="(onboarding)" />
               <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="shopping-list" options={{ presentation: 'modal' }} />
             </Stack>
           </OnboardingProvider>
         </ThemeProvider>
