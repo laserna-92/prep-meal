@@ -130,6 +130,7 @@ create table recipes (
   cook_minutes   smallint not null default 0,
   equipment      text[]  not null default '{}',
   diet           diet_type[] not null default '{omnivore}',
+  suitable_slots meal_slot[] not null default '{breakfast,lunch,dinner,snack}', -- slots onde encaixa (usado pelo solver)
   -- macros por porção (desnormalizado p/ performance; recalculado on write)
   kcal_per_serv  integer not null,
   protein_per_serv integer not null,
@@ -216,7 +217,8 @@ create table planned_meals (
   carbs_g     integer not null,
   fat_g       integer not null,
   sort_order  smallint not null default 0,
-  unique (plan_id, day_of_week, slot)
+  -- sort_order (não slot) é a chave por dia, para permitir várias refeições do mesmo slot (ex.: 2 snacks)
+  unique (plan_id, day_of_week, sort_order)
 );
 create index idx_pm_plan on planned_meals(plan_id);
 ```

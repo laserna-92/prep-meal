@@ -10,6 +10,10 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '';
 
+/** True when env vars are present, so the app should hit the real backend
+ *  rather than fall back to mock data. */
+export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+
 if (!supabaseUrl || !supabaseAnonKey) {
   // Non-fatal in dev scaffolding; auth/data calls will no-op until configured.
   console.warn(

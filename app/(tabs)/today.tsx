@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
@@ -7,11 +7,44 @@ import { MacroRing } from '@/components/ui/MacroRing';
 import { MealCard } from '@/components/MealCard';
 import { useTheme } from '@/theme';
 import { mockTarget, mockTodayMeals } from '@/lib/mock';
+import { isSupabaseConfigured } from '@/lib/supabase';
+import { getCurrentPlan } from '@/api/plan';
 import type { Macros, PlannedMeal } from '@/types/models';
+
+const EMPTY: Macros = { calories: 0, proteinG: 0, carbsG: 0, fatG: 0 };
+
+/** Our plans index days 0=Mon..6=Sun; map JS getDay() (0=Sun) to that. */
+function todayIndex(): number {
+  const js = new Date().getDay();
+  return (js + 6) % 7;
+}
 
 export default function Today() {
   const theme = useTheme();
-  const [meals, setMeals] = useState<PlannedMeal[]>(mockTodayMeals);
+  const [meals, setMeals] = useState<PlannedMeal[]>(isSupabaseConfigured ? [] : mockTodayMeals);
+  const [target, setTarget] = useState<Macros>(mockTarget);
+  const [loading, setLoading] = useState(isSupabaseConfigured);
+
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+    let active = true;
+    (async () => {
+      try {
+        const plan = await getCurrentPlan();
+        if (!active) return;
+        if (plan) {
+          setTarget(plan.targetSnapshot);
+          const today = plan.days.find((d) => d.dayOfWeek === todayIndex()) ?? plan.days[0];
+          setMeals(today?.meals ?? []);
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const consumed = useMemo<Macros>(
     () =>
@@ -24,7 +57,7 @@ export default function Today() {
             carbsG: acc.carbsG + m.macros.carbsG,
             fatG: acc.fatG + m.macros.fatG,
           }),
-          { calories: 0, proteinG: 0, carbsG: 0, fatG: 0 },
+          EMPTY,
         ),
     [meals],
   );
@@ -40,11 +73,21 @@ export default function Today() {
         <Text variant="label" color="secondary">
           Macros do dia
         </Text>
-        <MacroRing consumed={consumed} target={mockTarget} />
+        <MacroRing consumed={consumed} target={target} />
       </Card>
 
       <View style={{ gap: theme.space[3] }}>
         <Text variant="h2">As tuas refeições</Text>
+        {loading && (
+          <Text variant="body" color="secondary">
+            A carregar o teu plano…
+          </Text>
+        )}
+        {!loading && meals.length === 0 && (
+          <Text variant="body" color="secondary">
+            Sem plano ainda. Gera um no separador Plano.
+          </Text>
+        )}
         {meals.map((meal) => (
           <MealCard key={meal.id} meal={meal} onEat={() => eat(meal.id)} onSwap={() => {}} />
         ))}

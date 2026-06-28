@@ -44,8 +44,28 @@ src/
   types/                  # tipos de domínio (doc 04/05)
 ```
 
+## Backend (Supabase)
+
+```
+supabase/
+  migrations/   schema, triggers (macro recompute), RLS, plan-generate RPC
+  seed.sql      ingredient catalogue + starter high-protein recipes
+  _test/        local Postgres validation (auth shim + Flow A integration test)
+```
+
+Ver `supabase/README.md`. Decisão: nutrição calcula-se no cliente
+(`src/lib/nutrition.ts`) e a geração de plano é um **RPC Postgres**
+(`generate_meal_plan`) protegido por RLS — testável em CI, sem Edge Function.
+
+**Flow A ligado:** no fim do onboarding, se o Supabase estiver configurado, a app
+faz sign-in anónimo, persiste perfil + alvo de macros e gera o plano da semana;
+o separador **Hoje** lê o plano real. Sem env configurado, corre tudo em mock.
+
+A camada de acesso vive em `src/api/` (`auth`, `profile`, `plan`).
+
 ## Stack
-Expo (React Native) + expo-router · TypeScript · Supabase (auth/dados) ·
+Expo (React Native) + expo-router · TypeScript · Supabase (auth/dados/RLS/RPC) ·
 react-native-svg (anéis de macros) · lucide-react-native (ícones).
 
-> Estado atual: **scaffold funcional com dados mock**. Próximo: ligar Supabase e o Flow A real.
+> Estado atual: **scaffold funcional + backend validado**. Flow A (onboarding →
+> macros → plano) ligado ao Supabase, com fallback para mock.
