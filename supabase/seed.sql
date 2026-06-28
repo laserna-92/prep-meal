@@ -139,6 +139,43 @@ join (values
 ) as q(name, quantity, unit, sort_order) on true
 join ingredients i on i.name = q.name;
 
+-- ── Recipe steps (technique + duration drive the Modo Cozinha router) ─────────
+insert into recipe_steps(recipe_id, step_no, instruction, duration_min, technique)
+select r.id, s.step_no, s.instruction, s.duration_min, s.technique
+from recipes r join (values
+  -- Frango teriyaki + arroz
+  ('Frango teriyaki + arroz', 1, 'Temperar o frango', 5, 'prep'),
+  ('Frango teriyaki + arroz', 2, 'Cozer o arroz', 12, 'stove'),
+  ('Frango teriyaki + arroz', 3, 'Saltear o frango com molho teriyaki', 10, 'stove'),
+  ('Frango teriyaki + arroz', 4, 'Juntar e porcionar', 3, 'assemble'),
+  -- Peru + batata-doce assada
+  ('Peru + batata-doce assada', 1, 'Pré-aquecer o forno a 200º', 0, 'oven'),
+  ('Peru + batata-doce assada', 2, 'Cortar e temperar a batata-doce', 6, 'prep'),
+  ('Peru + batata-doce assada', 3, 'Assar peru e batata-doce', 25, 'oven'),
+  ('Peru + batata-doce assada', 4, 'Arrefecer e porcionar', 5, 'rest'),
+  -- Atum + massa
+  ('Atum + massa', 1, 'Cozer a massa', 11, 'stove'),
+  ('Atum + massa', 2, 'Escorrer e juntar atum e azeite', 4, 'assemble'),
+  -- Salmão + legumes assados
+  ('Salmão + legumes assados', 1, 'Pré-aquecer o forno a 200º', 0, 'oven'),
+  ('Salmão + legumes assados', 2, 'Cortar e temperar os legumes', 6, 'prep'),
+  ('Salmão + legumes assados', 3, 'Assar salmão e legumes', 20, 'oven'),
+  ('Salmão + legumes assados', 4, 'Arrefecer e porcionar', 5, 'rest'),
+  -- Bowl de peru + arroz
+  ('Bowl de peru + arroz', 1, 'Cozer o arroz', 12, 'stove'),
+  ('Bowl de peru + arroz', 2, 'Saltear o peru e os legumes', 10, 'stove'),
+  ('Bowl de peru + arroz', 3, 'Montar o bowl e porcionar', 3, 'assemble'),
+  -- Ovos mexidos + aveia
+  ('Ovos mexidos + aveia', 1, 'Preparar a aveia', 4, 'stove'),
+  ('Ovos mexidos + aveia', 2, 'Mexer os ovos', 5, 'stove'),
+  ('Ovos mexidos + aveia', 3, 'Empratar com banana', 2, 'assemble'),
+  -- Iogurte grego + whey + banana
+  ('Iogurte grego + whey + banana', 1, 'Misturar iogurte, whey e aveia', 2, 'prep'),
+  ('Iogurte grego + whey + banana', 2, 'Juntar banana e porcionar', 2, 'assemble'),
+  -- Batido proteico + banana
+  ('Batido proteico + banana', 1, 'Bater whey com banana e água', 3, 'prep')
+) s(title, step_no, instruction, duration_min, technique) on s.title = r.title;
+
 -- Tag the lot as high_protein; quick ones as quick.
 insert into recipe_tags(recipe_id, tag_id)
 select r.id, t.id from recipes r cross join tags t where t.slug = 'high_protein';

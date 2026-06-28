@@ -61,7 +61,19 @@ Ver `supabase/README.md`. Decisão: nutrição calcula-se no cliente
 faz sign-in anónimo, persiste perfil + alvo de macros e gera o plano da semana;
 o separador **Hoje** lê o plano real. Sem env configurado, corre tudo em mock.
 
-A camada de acesso vive em `src/api/` (`auth`, `profile`, `plan`).
+A camada de acesso vive em `src/api/` (`auth`, `profile`, `plan`, `shopping`, `cook`).
+
+**Modo Cozinha:** o separador Prep seleciona refeições, gera um roteiro de batch
+cooking otimizado (passos fundidos/ordenados por técnica + etiquetas de tupperware
+via RPC `cook_plan`) e marca as refeições como prontas.
+
+## CI
+
+`.github/workflows/ci.yml` corre em cada push/PR:
+- **database** — sobe Postgres 16, aplica migrations + seed e corre os testes SQL
+  (`scripts/db-test.sh`): geração de plano, swap/confirmar, lista de compras,
+  roteiro de cozinha e isolamento RLS.
+- **app** — `npm ci`, `tsc --noEmit` e `expo export` (web).
 
 ## Stack
 Expo (React Native) + expo-router · TypeScript · Supabase (auth/dados/RLS/RPC) ·

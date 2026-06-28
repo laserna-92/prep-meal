@@ -3,6 +3,7 @@
  * Replace with Supabase / Edge Function calls (see docs/05-api-contract.md).
  */
 import type { MealPlan, Macros, PlannedMeal, RecipeSummary } from '@/types/models';
+import type { CookPlan } from '@/api/cook';
 
 export const mockTarget: Macros = { calories: 2650, proteinG: 185, carbsG: 320, fatG: 70 };
 
@@ -72,6 +73,24 @@ export const mockShoppingList = {
       { id: 'si_5', name: 'Arroz', quantity: 1000, unit: 'g', aisle: 'grocery' as const, estPrice: 2.0, haveAtHome: false, checked: false },
       { id: 'si_6', name: 'Aveia', quantity: 500, unit: 'g', aisle: 'grocery' as const, estPrice: 1.5, haveAtHome: false, checked: false },
     ] },
+  ],
+};
+
+export const mockCookPlan: CookPlan = {
+  estimateMinutes: 105,
+  containers: 8,
+  timeline: [
+    { order: 1, instruction: 'Pré-aquecer o forno a 200º', durationMin: 0, technique: 'oven', parallel: true },
+    { order: 2, instruction: 'Temperar frango e salmão', durationMin: 6, technique: 'prep', parallel: false },
+    { order: 3, instruction: 'Cortar e temperar os legumes', durationMin: 6, technique: 'prep', parallel: false },
+    { order: 4, instruction: 'Assar frango, salmão e legumes', durationMin: 25, technique: 'oven', parallel: true },
+    { order: 5, instruction: 'Cozer o arroz', durationMin: 12, technique: 'stove', parallel: true },
+    { order: 6, instruction: 'Arrefecer 10 min', durationMin: 10, technique: 'rest', parallel: false },
+    { order: 7, instruction: 'Porcionar nos tuppers', durationMin: 8, technique: 'assemble', parallel: false },
+  ],
+  labels: [
+    { meal: 'Frango teriyaki + arroz', day: 0, slot: 'lunch', macros: { calories: 720, proteinG: 52, carbsG: 80, fatG: 14 }, useByDate: '2026-07-03' },
+    { meal: 'Salmão + legumes assados', day: 0, slot: 'dinner', macros: { calories: 540, proteinG: 48, carbsG: 30, fatG: 22 }, useByDate: '2026-07-01' },
   ],
 };
 

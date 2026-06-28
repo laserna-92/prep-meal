@@ -39,6 +39,8 @@ Edge Functions earn their place later.
 | `swap_meal(p_meal uuid, p_recipe uuid)` | Replace a meal's recipe, rescaling servings to its calorie share. |
 | `confirm_plan(p_plan uuid, p_people smallint)` | Mark a plan confirmed and build its shopping list; returns list id. |
 | `generate_shopping_list(p_plan uuid, p_people smallint)` | Aggregate + dedupe ingredients into a shopping list; returns list id. |
+| `cook_plan(p_plan uuid, p_meal_ids uuid[])` | Batch-cooking router: merged/ordered timeline + tupperware labels (JSON). |
+| `cook_plan_complete(p_meal_ids uuid[])` | Mark prepared meals `ready`; returns count updated. |
 | `recalc_recipe(p_recipe uuid)` | Recompute a recipe's per-serving macros from its ingredients. |
 
 ## Running locally
@@ -55,7 +57,11 @@ never write them from the client.
 
 ## Reproducing the local validation (no Supabase CLI)
 
-`_test/00_auth_shim.sql` emulates the `auth` schema + roles; `_test/10_flow_a.sql`
-creates a user, profile and target, generates a plan and a shopping list, and
-asserts RLS hides the data from a second user. Apply migrations + seed against a
-plain Postgres, then run the two test files in order.
+`_test/00_auth_shim.sql` emulates the `auth` schema + roles; the `_test/N*.sql`
+files create a user/profile/target and exercise plan generation, swap/confirm,
+shopping-list aggregation and the cook-mode router, asserting RLS hides data from
+a second user. The whole sequence is wrapped by `scripts/db-test.sh` and run in CI:
+
+```bash
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/prepmeal ./scripts/db-test.sh
+```

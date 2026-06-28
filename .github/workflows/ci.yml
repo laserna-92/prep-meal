@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main, 'claude/**']
+  pull_request:
+
+jobs:
+  database:
+    name: Database (migrations + SQL tests)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: prepmeal
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply schema + seed and run SQL integration tests
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/prepmeal
+        run: ./scripts/db-test.sh
+
+  app:
+    name: App (typecheck + web bundle)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Bundle (web export)
+        env:
+          EXPO_OFFLINE: '1'
+        run: npx expo export -p web
