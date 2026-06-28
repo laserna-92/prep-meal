@@ -17,4 +17,35 @@ com plano semanal, lista de compras inteligente e roteiro de batch cooking.
 - **Persona primária (MVP):** Gym (cut & bulk) — foco em precisão de macros e high-protein.
 - **Stack:** Expo (React Native) + Supabase + RevenueCat; dados nutricionais via USDA / Open Food Facts.
 
-> Estado atual: fase de design. Sem código de app ainda.
+## Arrancar o projeto (app Expo)
+
+```bash
+npm install                 # ou: npx expo install (reconcilia versões do SDK)
+cp .env.example .env        # preencher EXPO_PUBLIC_SUPABASE_URL / ANON_KEY
+npm start                   # abre o Expo dev server (i = iOS, a = Android, w = web)
+npm run typecheck           # tsc --noEmit
+```
+
+> A app corre com **dados mock** (`src/lib/mock.ts`) até o Supabase estar ligado,
+> por isso podes ver todos os ecrãs sem backend. O onboarding já calcula macros a sério.
+
+## Estrutura do projeto
+
+```
+app/                      # rotas (expo-router)
+  (onboarding)/           # wizard: welcome → goal → body → preferences → constraints → summary
+  (tabs)/                 # Hoje · Plano · Prep · Receitas · Perfil
+src/
+  theme/                  # design tokens + ThemeProvider/useTheme (doc 03)
+  components/ui/          # átomos: Text, Button, Card, MacroRing, MacroBar, Field, SelectRow
+  components/             # compostos: MealCard
+  lib/                    # nutrition (Mifflin-St Jeor), supabase, mock
+  state/                  # onboarding store
+  types/                  # tipos de domínio (doc 04/05)
+```
+
+## Stack
+Expo (React Native) + expo-router · TypeScript · Supabase (auth/dados) ·
+react-native-svg (anéis de macros) · lucide-react-native (ícones).
+
+> Estado atual: **scaffold funcional com dados mock**. Próximo: ligar Supabase e o Flow A real.
