@@ -38,7 +38,16 @@ com **lista de compras agregada** e **roteiro de confeção em lote (batch cooki
 | **Família / casal** (40) | Refeições saudáveis e económicas | Planear para vários, desperdício | Escalar porções, lista de compras eficiente, orçamento |
 | **Iniciante saudável** (28) | "Comer melhor" sem saber por onde começar | Paralisia de decisão | Planos guiados, receitas simples, educação leve |
 
-**Persona primária para o MVP:** *Gym Bro / Cut & Bulk* + *Profissional ocupado* (maior intenção e disposição a usar a app semanalmente).
+**Persona primária para o MVP (decidida):** *Gym Bro / Cut & Bulk*.
+O MVP é otimizado para quem treina e precisa de **macros precisos, alto teor proteico
+e variedade controlada**, com forte intenção de uso semanal. As restantes personas
+(profissional ocupado, família, iniciante) são alvo de v1.1+.
+
+**Implicações da escolha no MVP:**
+- Precisão de macros é prioridade nº1 (matching apertado, proteína por refeição).
+- Receitas seed enviesadas para *high-protein* e *meal-prep friendly*.
+- Tracking de macros e recalibração ganham destaque já na v1.
+- Tom e copy orientados a objetivos de composição corporal (cut/bulk/maintenance).
 
 ---
 
@@ -299,7 +308,11 @@ User ─1:N─ PantryItem (fase 2)
 | **Auth** | Supabase Auth / Clerk (email + social) | — |
 | **Pagamentos** | RevenueCat (subscrições in-app) | Stripe |
 
-> Recomendação para velocidade de MVP: **Expo (React Native) + Supabase + RevenueCat**.
+> **Stack decidida (recomendação técnica aceite): Expo (React Native) + Supabase + RevenueCat.**
+> Justificação: um só código para iOS/Android/web acelera o MVP; Supabase entrega
+> Postgres + Auth + Storage sem montar backend de raiz; RevenueCat trata das subscrições
+> in-app. Dados nutricionais via USDA FoodData Central / Open Food Facts, com seed próprio
+> de receitas high-protein curadas para a persona Gym.
 
 ---
 
